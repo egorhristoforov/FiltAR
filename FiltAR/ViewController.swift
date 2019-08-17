@@ -18,9 +18,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     private var boxNodes = [SCNNode]()
     private var filters = [CIFilter?]()
     private var blurRadius = 2
-    private var areaRadius: CGFloat = 0.35
+    private var areaRadius: CGFloat = 0.35 {
+        didSet {
+            startingPosition = SCNVector3(0, 0, -areaRadius)
+        }
+    }
     private var nodesCount = 0
-    private lazy var startingPosition = SCNVector3(0, 0, -areaRadius)
+    private var startingPosition = SCNVector3(0, 0, 0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +39,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let scene = SCNScene()
         sceneView.scene = scene
+        
+        areaRadius = (0.18 + 0.28) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         
         for i in 0..<nodesCount {
             let boxNode = createBox(boxWidth: 0.18, boxHeight: 0.28, boxLength: 0.01)
