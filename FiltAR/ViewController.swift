@@ -18,7 +18,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     private var boxNodes = [SCNNode]()
     private var filters = [CIFilter?]()
     private var blurRadius = 2
-    private var areaRadius = 0.5
+    private var areaRadius: CGFloat = 0.35
     private var nodesCount = 0
     private lazy var startingPosition = SCNVector3(0, 0, -areaRadius)
     
@@ -167,18 +167,27 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func getPositionForBox(withIndex index: Int) -> SCNVector3 {
-        switch index {
-        case 0:
-            return SCNVector3(0, 0, -0.5)
-        case 1:
-            return SCNVector3(0, 0, 0.5)
-        case 2:
-            return SCNVector3(-0.5, 0, 0)
-        case 3:
-            return SCNVector3(0.5, 0, 0)
-        default:
-            return SCNVector3(0, 0, 0)
+        
+        if index == 0 {
+            return startingPosition
         }
+        
+        let l = 2 * CGFloat.pi * CGFloat(index) / CGFloat(nodesCount) - CGFloat.pi / 2
+        var x: CGFloat = 0
+        var z: CGFloat = 0
+        if l == CGFloat.pi / 2 {
+            x = 0
+            z = areaRadius
+        } else if l < CGFloat.pi / 2{
+            x = sqrt(pow(areaRadius, 2) / (1 + pow(tan(l), 2)))
+            z = tan(l) * x
+        } else {
+            x = -sqrt(pow(areaRadius, 2) / (1 + pow(tan(l), 2)))
+            z = tan(l) * x
+        }
+        
+        return SCNVector3(x, 0, z)
+        
     }
     
 }
