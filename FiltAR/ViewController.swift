@@ -13,45 +13,48 @@ import ARKit
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet weak var imageView: UIImageView!
+    
+    private var boxNodes = [SCNNode]()
+    private var filters = [CIFilter?]()
+    private var blurRadius = 2
+    private var areaRadius = 0.5
+    private var nodesCount = 0
+    private lazy var startingPosition = SCNVector3(0, 0, -areaRadius)
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Set the view's delegate
+        filters = [CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur")]
+        nodesCount = filters.count
+        
         sceneView.delegate = self
         
-        // Show statistics such as fps and timing information
         sceneView.showsStatistics = true
         sceneView.debugOptions = [.showWorldOrigin]
         
         let scene = SCNScene()
-        
-        let boxNode = createBox(boxWidth: 0.18, boxHeight: 0.28, boxLength: 0.01)
-        boxNode.position = SCNVector3(0, 0, -0.5)
-//        let billboardConstraint = SCNBillboardConstraint()
-//        billboardConstraint.freeAxes = [SCNBillboardAxis.Y, SCNBillboardAxis.X]
-//        boxNode.constraints = [billboardConstraint]
-        scene.rootNode.addChildNode(boxNode)
         sceneView.scene = scene
+        
+        for i in 0..<nodesCount {
+            let boxNode = createBox(boxWidth: 0.18, boxHeight: 0.28, boxLength: 0.01)
+            boxNode.position = getPositionForBox(withIndex: i)
+            boxNodes.append(boxNode)
+            scene.rootNode.addChildNode(boxNode)
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Create a session configuration
-        //let configuration = ARWorldTrackingConfiguration()
         let configuration = AROrientationTrackingConfiguration()
-
         configuration.worldAlignment = .gravity
-        
-        // Run the view's session
         sceneView.session.run(configuration)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        // Pause the view's session
         sceneView.session.pause()
     }
 
@@ -73,6 +76,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         // Reset tracking and/or remove existing anchors if consistent tracking is required
         
     }
+    
+    // MARK: - Create boxes with filters
     
     func createBox(boxWidth width: CGFloat, boxHeight height: CGFloat, boxLength length: CGFloat, boxRadius radius: CGFloat = 0) -> SCNNode {
         
@@ -121,7 +126,59 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         let hoverSequence = SCNAction.sequence([moveUp,waitAction,moveDown, waitAction])
         let loopSequence = SCNAction.repeatForever(hoverSequence)
         resultNode.runAction(loopSequence)
+        
+        let billboardConstraint = SCNBillboardConstraint()
+        billboardConstraint.freeAxes = [SCNBillboardAxis.Y, SCNBillboardAxis.X]
+        resultNode.constraints = [billboardConstraint]
      
         return resultNode
     }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touchLocation = touches.first?.location(in: self.view) else { return }
+        let hit = sceneView.hitTest(touchLocation)
+        if let tappedNode = hit.first?.node {
+            guard let image = getImageFromNode(from: tappedNode) else { return }
+            guard let nodeIndex = boxNodes.firstIndex(of: tappedNode) else { return }
+            guard let currentFilter = filters[nodeIndex] else { return }
+            
+            let context = CIContext(options: nil)
+            
+            let beginImage = CIImage(image: image)
+            currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
+            currentFilter.setValue(blurRadius, forKey: kCIInputRadiusKey)
+            
+            if let output = currentFilter.outputImage {
+                if let cgimg = context.createCGImage(output, from: output.extent) {
+                    let processedImage = UIImage(cgImage: cgimg)
+                    imageView.image = processedImage
+                    blurRadius += 2
+                    // do something interesting with the processed image
+                }
+            }
+        }
+    }
+    
+    func getImageFromNode(from node: SCNNode) -> UIImage? {
+        guard let material = node.geometry?.materials[0] else { return nil }
+        guard let image = material.diffuse.contents as? UIImage else { return nil }
+        
+        return image
+    }
+    
+    func getPositionForBox(withIndex index: Int) -> SCNVector3 {
+        switch index {
+        case 0:
+            return SCNVector3(0, 0, -0.5)
+        case 1:
+            return SCNVector3(0, 0, 0.5)
+        case 2:
+            return SCNVector3(-0.5, 0, 0)
+        case 3:
+            return SCNVector3(0.5, 0, 0)
+        default:
+            return SCNVector3(0, 0, 0)
+        }
+    }
+    
 }
