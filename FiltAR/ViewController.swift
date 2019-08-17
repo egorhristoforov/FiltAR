@@ -28,9 +28,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let boxNode = createBox(boxWidth: 0.18, boxHeight: 0.28, boxLength: 0.01)
         boxNode.position = SCNVector3(0, 0, -0.5)
-        let billboardConstraint = SCNBillboardConstraint()
-        billboardConstraint.freeAxes = [SCNBillboardAxis.Y, SCNBillboardAxis.X]
-        boxNode.constraints = [billboardConstraint]
+//        let billboardConstraint = SCNBillboardConstraint()
+//        billboardConstraint.freeAxes = [SCNBillboardAxis.Y, SCNBillboardAxis.X]
+//        boxNode.constraints = [billboardConstraint]
         scene.rootNode.addChildNode(boxNode)
         sceneView.scene = scene
     }
@@ -39,7 +39,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewWillAppear(animated)
         
         // Create a session configuration
-        let configuration = ARWorldTrackingConfiguration()
+        //let configuration = ARWorldTrackingConfiguration()
+        let configuration = AROrientationTrackingConfiguration()
 
         configuration.worldAlignment = .gravity
         
@@ -54,38 +55,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
 
-    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        if let camera = sceneView.pointOfView {
-            let nodes = sceneView.scene.rootNode.childNodes
-            guard !nodes.isEmpty else {return}
-            for node in nodes {
-                //node.simdScale = simd_float3(0.5, 0.5, 0.5)
-                //node.position = SCNVector3(camera.position.x, camera.position.y, camera.position.z - 0.5)
-            }
-        }
-    }
     
     // MARK: - ARSCNViewDelegate
     
-/*
-    // Override to create and configure nodes for anchors added to the view's session.
-    func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {
-        let node = SCNNode()
-     
-        return node
-    }
-*/
-    
-    /*override func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
-        let pov = sceneView.pointOfView
-        let position = pov?.position
-        
-        let x = position?.x
-        let y = position?.y
-        let z = position?.z
-        
-        
-    }*/
     
     func session(_ session: ARSession, didFailWithError error: Error) {
         // Present an error message to the user
