@@ -103,15 +103,11 @@
 		74BA6A6322E46B2E000E37A7 /* FiltAR */ = {
 			isa = PBXGroup;
 			children = (
-				74BA6A6422E46B2E000E37A7 /* AppDelegate.swift */,
-				74BA6A6622E46B2E000E37A7 /* art.scnassets */,
-				74BA6A6A22E46B2E000E37A7 /* Main.storyboard */,
-				74BA6A6D22E46B2E000E37A7 /* Assets.xcassets */,
-				74BA6A6F22E46B2E000E37A7 /* LaunchScreen.storyboard */,
+				74D42A2E2309903C00D15A34 /* Supported */,
+				74D42A2D2309903400D15A34 /* Models */,
+				74D42A2C23098FFD00D15A34 /* Views */,
+				74D42A2B23098FE700D15A34 /* Controllers */,
 				74BA6A7222E46B2E000E37A7 /* Info.plist */,
-				74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */,
-				74D42A2323096AE400D15A34 /* ViewController.swift */,
-				74D42A2523096DE900D15A34 /* RoundedButton.swift */,
 			);
 			path = FiltAR;
 			sourceTree = "<group>";
@@ -132,6 +128,42 @@
 				74BA6A8822E46B2F000E37A7 /* Info.plist */,
 			);
 			path = FiltARUITests;
+			sourceTree = "<group>";
+		};
+		74D42A2B23098FE700D15A34 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */,
+				74D42A2323096AE400D15A34 /* ViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		74D42A2C23098FFD00D15A34 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				74BA6A6A22E46B2E000E37A7 /* Main.storyboard */,
+				74D42A2523096DE900D15A34 /* RoundedButton.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		74D42A2D2309903400D15A34 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		74D42A2E2309903C00D15A34 /* Supported */ = {
+			isa = PBXGroup;
+			children = (
+				74BA6A6422E46B2E000E37A7 /* AppDelegate.swift */,
+				74BA6A6F22E46B2E000E37A7 /* LaunchScreen.storyboard */,
+				74BA6A6D22E46B2E000E37A7 /* Assets.xcassets */,
+				74BA6A6622E46B2E000E37A7 /* art.scnassets */,
+			);
+			path = Supported;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
