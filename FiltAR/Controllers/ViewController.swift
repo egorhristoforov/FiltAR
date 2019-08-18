@@ -209,7 +209,6 @@ extension ViewController: UIImagePickerControllerDelegate {
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let pickedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
-            //imageView.contentMode = .scaleAspectFit
             imageView.image = pickedImage
         }
         
