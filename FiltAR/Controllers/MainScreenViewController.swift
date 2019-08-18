@@ -46,9 +46,7 @@ class MainScreenViewController: UIViewController {
             popoverController.sourceRect = sender.bounds
         }
 
-        self.present(alert, animated: true) {
-            self.imagePicker.navigationBar.topItem?.rightBarButtonItem?.tintColor = UIColor.black
-        }
+        self.present(alert, animated: true, completion: nil)
     }  
 }
 
