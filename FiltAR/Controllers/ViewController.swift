@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  FiltAR
 //
-//  Created by Egor on 18/08/2019.
+//  Created by Egor on 21/07/2019.
 //  Copyright © 2019 Egor. All rights reserved.
 //
 
@@ -11,7 +11,7 @@ import SceneKit
 import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControllerDelegate {
-    
+
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var imageView: UIImageView!
     private let imagePicker = UIImagePickerController()
@@ -70,7 +70,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
         
         sceneView.session.pause()
     }
-    
+
     
     // MARK: - ARSCNViewDelegate
     
@@ -143,7 +143,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
         let billboardConstraint = SCNBillboardConstraint()
         billboardConstraint.freeAxes = [SCNBillboardAxis.Y, SCNBillboardAxis.X]
         resultNode.constraints = [billboardConstraint]
-        
+     
         return resultNode
     }
     
