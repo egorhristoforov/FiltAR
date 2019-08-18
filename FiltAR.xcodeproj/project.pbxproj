@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		74BA6A6522E46B2E000E37A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BA6A6422E46B2E000E37A7 /* AppDelegate.swift */; };
-		74BA6A6722E46B2E000E37A7 /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 74BA6A6622E46B2E000E37A7 /* art.scnassets */; };
 		74BA6A6C22E46B2E000E37A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74BA6A6A22E46B2E000E37A7 /* Main.storyboard */; };
 		74BA6A6E22E46B2E000E37A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 74BA6A6D22E46B2E000E37A7 /* Assets.xcassets */; };
 		74BA6A7122E46B2E000E37A7 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74BA6A6F22E46B2E000E37A7 /* LaunchScreen.storyboard */; };
@@ -39,7 +38,6 @@
 /* Begin PBXFileReference section */
 		74BA6A6122E46B2E000E37A7 /* FiltAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FiltAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		74BA6A6422E46B2E000E37A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		74BA6A6622E46B2E000E37A7 /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		74BA6A6B22E46B2E000E37A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		74BA6A6D22E46B2E000E37A7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		74BA6A7022E46B2E000E37A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -161,7 +159,6 @@
 				74BA6A6422E46B2E000E37A7 /* AppDelegate.swift */,
 				74BA6A6F22E46B2E000E37A7 /* LaunchScreen.storyboard */,
 				74BA6A6D22E46B2E000E37A7 /* Assets.xcassets */,
-				74BA6A6622E46B2E000E37A7 /* art.scnassets */,
 			);
 			path = Supported;
 			sourceTree = "<group>";
@@ -270,7 +267,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				74BA6A6722E46B2E000E37A7 /* art.scnassets in Resources */,
 				74BA6A7122E46B2E000E37A7 /* LaunchScreen.storyboard in Resources */,
 				74BA6A6E22E46B2E000E37A7 /* Assets.xcassets in Resources */,
 				74BA6A6C22E46B2E000E37A7 /* Main.storyboard in Resources */,
