@@ -50,31 +50,20 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        let backButton = UIBarButtonItem()
-        backButton.title = ""
-        self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
         
-        setupSaveButtonUI()
-        popupView.layer.masksToBounds = true
-        popupView.layer.cornerRadius = 14
-        
-        imageView.image = pickedImage
-        
+        setupUI()
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
+        sceneView.delegate = self
         
         filters = [CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur")]
         nodesCount = filters.count
-        
-        sceneView.delegate = self
         
         let scene = SCNScene()
         sceneView.scene = scene
         
         let proportion = getProportion(fromImage: pickedImage)
-        print("Proportion = \(proportion), boxWidth = \(boxWidth), boxHeight = \(boxWidth * proportion), imageWidth = \(pickedImage!.size.width), imageHeight = \(pickedImage!.size.height)")
-        areaRadius = (boxWidth + boxWidth * proportion) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+        areaRadius = (boxWidth + boxWidth * proportion + 2.0) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         
         for i in 0..<nodesCount {
             let boxNode = createBox(boxWidth: boxWidth, boxHeight: boxWidth * proportion, boxLength: 0.01)
@@ -96,7 +85,6 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         sceneView.session.pause()
     }
     
@@ -121,10 +109,20 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     // MARK: - Setup UI methods
     
-    func setupSaveButtonUI() {
+    func setupUI() {
+        let backButton = UIBarButtonItem()
+        backButton.title = ""
+        self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
+        
+        popupView.layer.masksToBounds = true
+        popupView.layer.cornerRadius = 14
+        
+        imageView.image = pickedImage
+        
         saveButton.layer.masksToBounds = true
         saveButton.layer.cornerRadius = 16
     }
+    
     
     // MARK: - Create boxes with filters
     
@@ -165,7 +163,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         let borderNode = SCNNode(geometry: borderBox)
         
         borderNode.position = SCNVector3(0, 0, 0)
-        imageNode.position = SCNVector3(0, 0, 0.0055)
+        imageNode.position = SCNVector3(0, 0, 0.009)
         
         resultNode.addChildNode(borderNode)
         resultNode.addChildNode(imageNode)
