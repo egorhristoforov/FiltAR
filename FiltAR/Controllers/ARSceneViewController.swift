@@ -34,6 +34,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
             startingPosition = SCNVector3(0, 0, -areaRadius)
         }
     }
+    private var boxWidth: CGFloat = 0.9
     private var nodesCount = 0
     private var startingPosition = SCNVector3(0, 0, 0)
     
@@ -61,14 +62,18 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         let scene = SCNScene()
         sceneView.scene = scene
         
-        areaRadius = (0.18 + 0.28) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+        let proportion = getProportion(fromImage: pickedImage)
+        print("Proportion = \(proportion), boxWidth = \(boxWidth), boxHeight = \(boxWidth * proportion), imageWidth = \(pickedImage!.size.width), imageHeight = \(pickedImage!.size.height)")
+        areaRadius = (boxWidth + boxWidth * proportion) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         
         for i in 0..<nodesCount {
-            let boxNode = createBox(boxWidth: 0.18, boxHeight: 0.28, boxLength: 0.01)
+            let boxNode = createBox(boxWidth: boxWidth, boxHeight: boxWidth * proportion, boxLength: 0.01)
             boxNode.position = getPositionForBox(withIndex: i)
             boxNodes.append(boxNode)
             scene.rootNode.addChildNode(boxNode)
         }
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -105,13 +110,8 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func setupSaveButtonUI() {
-        //saveButton.backgroundColor = UIColor.white
-        //saveButton.setTitleColor(UIColor.black, for: .normal)
-        //saveButton.setTitleColor(UIColor.black, for: .highlighted)
         saveButton.layer.masksToBounds = true
         saveButton.layer.cornerRadius = 16
-        //layer.borderWidth = 0.6
-        //layer.borderColor = UIColor.white.cgColor
     }
     
     // MARK: - Create boxes with filters
@@ -129,11 +129,11 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
         let frontSideMaterial = SCNMaterial()
         frontSideMaterial.diffuse.contents = pickedImage
-        
-        let translation = SCNMatrix4MakeTranslation(-1, 0, 0)
-        let rotation = SCNMatrix4MakeRotation(-Float.pi / 2, 0, 0, 1)
-        let transform = SCNMatrix4Mult(translation, rotation)
-        frontSideMaterial.diffuse.contentsTransform = transform
+
+//        let translation = SCNMatrix4MakeTranslation(-1, 0, 0)
+//        let rotation = SCNMatrix4MakeRotation(-Float.pi / 2, 0, 0, 1)
+//        let transform = SCNMatrix4Mult(translation, rotation)
+//        frontSideMaterial.diffuse.contentsTransform = transform
         
         let rightSideMaterial = SCNMaterial()
         rightSideMaterial.diffuse.contents = UIColor.white
@@ -257,9 +257,27 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     }
     
     func updateNodes(withImage image: UIImage) {
+        let proportion = getProportion(fromImage: image)
         for node in boxNodes {
-            let child = node.childNodes[1]
-            child.geometry?.materials[0].diffuse.contents = image
+            let imageNode = node.childNodes[1]
+//            let borderNode = node.childNodes[0]
+//
+//            if let box = node.geometry as? SCNBox {
+//                box.width = boxWidth
+//                box.height = boxWidth * proportion
+//            }
+//
+//            if let box = borderNode.geometry as? SCNBox {
+//                box.width = boxWidth
+//                box.height = boxWidth * proportion
+//            }
+//
+//            if let box = imageNode.geometry as? SCNBox {
+//                box.width = boxWidth
+//                box.height = boxWidth * proportion
+//            }
+            
+            imageNode.geometry?.materials[0].diffuse.contents = image
         }
     }
     
@@ -301,6 +319,14 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    func getProportion(fromImage image: UIImage) -> CGFloat {
+        let pixelWidth = image.size.width
+        let pixelHeight = image.size.height
+        let proportion = pixelHeight / pixelWidth
+        
+        return proportion
+    }
+    
     
 }
 
@@ -318,9 +344,7 @@ extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationCo
             
             self.pickedImage = pickedImage
             updateNodes(withImage: pickedImage)
-            let pixelWidth = pickedImage.size.width * pickedImage.scale
-            let pixelHeight = pickedImage.size.height * pickedImage.scale
-            print(pixelWidth, pixelHeight)
+            
         } else {
             dismiss(animated: true, completion: nil)
         }
