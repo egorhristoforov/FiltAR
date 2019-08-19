@@ -12,6 +12,8 @@ import ARKit
 
 class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
+    // MARK: - Outlets and imagePicker
+    
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var saveButton: UIButton!
@@ -20,23 +22,31 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet weak var popupSpinner: UIActivityIndicatorView!
     private let imagePicker = UIImagePickerController()
     
-    public var pickedImage: UIImage! {
-        didSet {
-            self.imageView?.image = pickedImage
-        }
-    }
+    // MARK: - Global Variables
     
     private var boxNodes = [SCNNode]()
     private var filters = [CIFilter?]()
-    private var blurRadius = 2
+    private var nodesCount = 0
+    private var boxWidth: CGFloat = 0.9
+    private var startingPosition = SCNVector3(0, 0, 0)
+    private var blurRadius: CGFloat = 2
+    
     private var areaRadius: CGFloat = 0.35 {
         didSet {
             startingPosition = SCNVector3(0, 0, -areaRadius)
         }
     }
-    private var boxWidth: CGFloat = 0.9
-    private var nodesCount = 0
-    private var startingPosition = SCNVector3(0, 0, 0)
+    
+    public var pickedImage: UIImage! {
+        didSet {
+            if pickedImage.size.width > 2000 {
+                pickedImage = resizeImage(image: pickedImage, newWidth: 720)
+            }
+            self.imageView?.image = pickedImage
+        }
+    }
+    
+    // MARK: - View lifecycle methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -109,6 +119,8 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
+    // MARK: - Setup UI methods
+    
     func setupSaveButtonUI() {
         saveButton.layer.masksToBounds = true
         saveButton.layer.cornerRadius = 16
@@ -128,12 +140,8 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         let box = SCNBox(width: width, height: height, length: length, chamferRadius: radius)
         
         let frontSideMaterial = SCNMaterial()
+        
         frontSideMaterial.diffuse.contents = pickedImage
-
-//        let translation = SCNMatrix4MakeTranslation(-1, 0, 0)
-//        let rotation = SCNMatrix4MakeRotation(-Float.pi / 2, 0, 0, 1)
-//        let transform = SCNMatrix4Mult(translation, rotation)
-//        frontSideMaterial.diffuse.contentsTransform = transform
         
         let rightSideMaterial = SCNMaterial()
         rightSideMaterial.diffuse.contents = UIColor.white
@@ -188,13 +196,13 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
             
             let beginImage = CIImage(image: image)
             currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
-            currentFilter.setValue(blurRadius, forKey: kCIInputRadiusKey)
+            //currentFilter.setValue(blurRadius, forKey: kCIInputRadiusKey)
             
             if let output = currentFilter.outputImage {
                 if let cgimg = context.createCGImage(output, from: output.extent) {
                     let processedImage = UIImage(cgImage: cgimg)
                     imageView.image = processedImage
-                    blurRadius += 2
+                    //blurRadius += 2
                     // do something interesting with the processed image
                 }
             }
@@ -258,28 +266,36 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     func updateNodes(withImage image: UIImage) {
         let proportion = getProportion(fromImage: image)
+        areaRadius = (boxWidth + boxWidth * proportion) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+        
         for node in boxNodes {
+            
+            let i = boxNodes.firstIndex(of: node)!
+            node.position = getPositionForBox(withIndex: i)
+            
             let imageNode = node.childNodes[1]
-//            let borderNode = node.childNodes[0]
-//
-//            if let box = node.geometry as? SCNBox {
-//                box.width = boxWidth
-//                box.height = boxWidth * proportion
-//            }
-//
-//            if let box = borderNode.geometry as? SCNBox {
-//                box.width = boxWidth
-//                box.height = boxWidth * proportion
-//            }
-//
-//            if let box = imageNode.geometry as? SCNBox {
-//                box.width = boxWidth
-//                box.height = boxWidth * proportion
-//            }
+            let borderNode = node.childNodes[0]
+
+            if let box = node.geometry as? SCNBox {
+                box.width = boxWidth
+                box.height = boxWidth * proportion
+            }
+
+            if let box = borderNode.geometry as? SCNBox {
+                box.width = boxWidth + 0.01
+                box.height = boxWidth * proportion + 0.01
+            }
+
+            if let box = imageNode.geometry as? SCNBox {
+                box.width = boxWidth
+                box.height = boxWidth * proportion
+            }
             
             imageNode.geometry?.materials[0].diffuse.contents = image
         }
     }
+    
+    // MARK: - Save imageView image to photo library
     
     @IBAction func saveButtonTapped(_ sender: UIButton) {
         
@@ -319,6 +335,22 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         }
     }
     
+    // MARK: - Resize image function
+    
+    func resizeImage(image: UIImage, newWidth: CGFloat) -> UIImage? {
+        
+        let scale = newWidth / image.size.width
+        let newHeight = image.size.height * scale
+        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
+        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return newImage
+    }
+    
+    // MARK: - Get proportion from image
+    
     func getProportion(fromImage image: UIImage) -> CGFloat {
         let pixelWidth = image.size.width
         let pixelHeight = image.size.height
@@ -329,6 +361,8 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     
 }
+
+// MARK: - Extension for imagePicker
 
 extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -343,7 +377,7 @@ extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationCo
             dismiss(animated: true, completion: nil)
             
             self.pickedImage = pickedImage
-            updateNodes(withImage: pickedImage)
+            updateNodes(withImage: self.pickedImage)
             
         } else {
             dismiss(animated: true, completion: nil)
