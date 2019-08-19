@@ -14,7 +14,7 @@
 		74BA6A7C22E46B2E000E37A7 /* FiltARTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BA6A7B22E46B2E000E37A7 /* FiltARTests.swift */; };
 		74BA6A8722E46B2F000E37A7 /* FiltARUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74BA6A8622E46B2F000E37A7 /* FiltARUITests.swift */; };
 		74D42A2223096AAF00D15A34 /* MainScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */; };
-		74D42A2423096AE400D15A34 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2323096AE400D15A34 /* ViewController.swift */; };
+		74D42A2423096AE400D15A34 /* ARSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2323096AE400D15A34 /* ARSceneViewController.swift */; };
 		74D42A2623096DE900D15A34 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2523096DE900D15A34 /* RoundedButton.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,7 +49,7 @@
 		74BA6A8622E46B2F000E37A7 /* FiltARUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FiltARUITests.swift; sourceTree = "<group>"; };
 		74BA6A8822E46B2F000E37A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenViewController.swift; sourceTree = "<group>"; };
-		74D42A2323096AE400D15A34 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		74D42A2323096AE400D15A34 /* ARSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneViewController.swift; sourceTree = "<group>"; };
 		74D42A2523096DE900D15A34 /* RoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -132,7 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */,
-				74D42A2323096AE400D15A34 /* ViewController.swift */,
+				74D42A2323096AE400D15A34 /* ARSceneViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -294,7 +294,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				74D42A2423096AE400D15A34 /* ViewController.swift in Sources */,
+				74D42A2423096AE400D15A34 /* ARSceneViewController.swift in Sources */,
 				74BA6A6522E46B2E000E37A7 /* AppDelegate.swift in Sources */,
 				74D42A2223096AAF00D15A34 /* MainScreenViewController.swift in Sources */,
 				74D42A2623096DE900D15A34 /* RoundedButton.swift in Sources */,

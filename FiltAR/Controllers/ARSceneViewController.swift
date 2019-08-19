@@ -10,11 +10,18 @@ import UIKit
 import SceneKit
 import ARKit
 
-class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControllerDelegate {
+class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var saveButton: UIButton!
     private let imagePicker = UIImagePickerController()
+    
+    public var pickedImage: UIImage! {
+        didSet {
+            self.imageView?.image = pickedImage
+        }
+    }
     
     private var boxNodes = [SCNNode]()
     private var filters = [CIFilter?]()
@@ -29,20 +36,22 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        let backButton = UIBarButtonItem()
+        backButton.title = ""
+        self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
+        
+        setupSaveButtonUI()
+        
+        imageView.image = pickedImage
         
         imagePicker.delegate = self
-        imagePicker.allowsEditing = true
-        imagePicker.sourceType = .camera
-        
-        present(imagePicker, animated: true, completion: nil)
+        imagePicker.allowsEditing = false
         
         filters = [CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur")]
         nodesCount = filters.count
         
         sceneView.delegate = self
-        
-        sceneView.showsStatistics = true
-        sceneView.debugOptions = [.showWorldOrigin]
         
         let scene = SCNScene()
         sceneView.scene = scene
@@ -59,7 +68,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        self.navigationController?.navigationBar.isHidden = false
         let configuration = AROrientationTrackingConfiguration()
         configuration.worldAlignment = .gravity
         sceneView.session.run(configuration)
@@ -90,6 +99,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
         
     }
     
+    func setupSaveButtonUI() {
+        //saveButton.backgroundColor = UIColor.white
+        //saveButton.setTitleColor(UIColor.black, for: .normal)
+        //saveButton.setTitleColor(UIColor.black, for: .highlighted)
+        saveButton.layer.masksToBounds = true
+        saveButton.layer.cornerRadius = 16
+        //layer.borderWidth = 0.6
+        //layer.borderColor = UIColor.white.cgColor
+    }
+    
     // MARK: - Create boxes with filters
     
     func createBox(boxWidth width: CGFloat, boxHeight height: CGFloat, boxLength length: CGFloat, boxRadius radius: CGFloat = 0) -> SCNNode {
@@ -104,7 +123,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
         let box = SCNBox(width: width, height: height, length: length, chamferRadius: radius)
         
         let frontSideMaterial = SCNMaterial()
-        frontSideMaterial.diffuse.contents = UIImage(named: "SteveJobs")
+        frontSideMaterial.diffuse.contents = pickedImage
+        
+        let translation = SCNMatrix4MakeTranslation(-1, 0, 0)
+        let rotation = SCNMatrix4MakeRotation(-Float.pi / 2, 0, 0, 1)
+        let transform = SCNMatrix4Mult(translation, rotation)
+        frontSideMaterial.diffuse.contentsTransform = transform
         
         let rightSideMaterial = SCNMaterial()
         rightSideMaterial.diffuse.contents = UIColor.white
@@ -203,20 +227,73 @@ class ViewController: UIViewController, ARSCNViewDelegate, UINavigationControlle
         
     }
     
-}
-
-extension ViewController: UIImagePickerControllerDelegate {
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let pickedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
-            imageView.image = pickedImage
+    @IBAction func rigthBarItemTapped(_ sender: UIBarButtonItem) {
+        
+        let alert = UIAlertController(title: "Where to take photo?", message: nil, preferredStyle: .actionSheet)
+        
+        let actionFromLibrary = UIAlertAction(title: "From photo library", style: .default) { (action) in
+            self.imagePicker.sourceType = .photoLibrary
+            self.present(self.imagePicker, animated: true, completion: nil)
         }
         
-        dismiss(animated: true, completion: nil)
+        let actionFromCamera = UIAlertAction(title: "From camera", style: .default) { (action) in
+            self.imagePicker.sourceType = .camera
+            self.present(self.imagePicker, animated: true, completion: nil)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alert.addAction(actionFromCamera)
+        alert.addAction(actionFromLibrary)
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: true, completion: nil)
+
+        
     }
+    
+    func updateNodes(withImage image: UIImage) {
+        for node in boxNodes {
+            let child = node.childNodes[1]
+            child.geometry?.materials[0].diffuse.contents = image
+        }
+    }
+    
+    @IBAction func saveButtonTapped(_ sender: UIButton) {
+        
+        if let imageForSaving = imageView.image {
+            UIImageWriteToSavedPhotosAlbum(imageForSaving, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
+        }
+        
+    }
+    
+    @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        if let error = error {
+            print("Error with saving photo, \(error)")
+        } else {
+            print("Saved!")
+        }
+    }
+    
+    
+}
+
+extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            
+            dismiss(animated: true, completion: nil)
+            
+            self.pickedImage = pickedImage
+            updateNodes(withImage: pickedImage)
+        } else {
+            dismiss(animated: true, completion: nil)
+        }
     }
     
 }

@@ -20,7 +20,10 @@ class MainScreenViewController: UIViewController {
         super.viewDidLoad()
         imagePicker.delegate = self
         imagePicker.allowsEditing = false
-        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     @IBAction func startButtonTapped(_ sender: UIButton) {
@@ -57,13 +60,21 @@ extension MainScreenViewController: UIImagePickerControllerDelegate, UINavigatio
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        defer {
+        
+        if let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            
+            dismiss(animated: true, completion: nil)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "ARScene") as! ARSceneViewController
+            
+            vc.pickedImage = pickedImage
+            print("Show vc")
+            //self.present(vc, animated:true, completion:nil)
+            self.navigationController?.pushViewController(vc, animated: true)
+        } else {
             dismiss(animated: true, completion: nil)
         }
-
-        guard let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else { return }
-
-
     }
 
 }
