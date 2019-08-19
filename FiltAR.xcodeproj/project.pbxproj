@@ -16,6 +16,7 @@
 		74D42A2223096AAF00D15A34 /* MainScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */; };
 		74D42A2423096AE400D15A34 /* ARSceneViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2323096AE400D15A34 /* ARSceneViewController.swift */; };
 		74D42A2623096DE900D15A34 /* RoundedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A2523096DE900D15A34 /* RoundedButton.swift */; };
+		74D42A32230B24B300D15A34 /* FilterModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74D42A31230B24B300D15A34 /* FilterModalViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainScreenViewController.swift; sourceTree = "<group>"; };
 		74D42A2323096AE400D15A34 /* ARSceneViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSceneViewController.swift; sourceTree = "<group>"; };
 		74D42A2523096DE900D15A34 /* RoundedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedButton.swift; sourceTree = "<group>"; };
+		74D42A31230B24B300D15A34 /* FilterModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterModalViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +135,7 @@
 			children = (
 				74D42A2123096AAF00D15A34 /* MainScreenViewController.swift */,
 				74D42A2323096AE400D15A34 /* ARSceneViewController.swift */,
+				74D42A31230B24B300D15A34 /* FilterModalViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 			files = (
 				74D42A2423096AE400D15A34 /* ARSceneViewController.swift in Sources */,
 				74BA6A6522E46B2E000E37A7 /* AppDelegate.swift in Sources */,
+				74D42A32230B24B300D15A34 /* FilterModalViewController.swift in Sources */,
 				74D42A2223096AAF00D15A34 /* MainScreenViewController.swift in Sources */,
 				74D42A2623096DE900D15A34 /* RoundedButton.swift in Sources */,
 			);

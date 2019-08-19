@@ -30,6 +30,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     private var boxWidth: CGFloat = 0.9
     private var startingPosition = SCNVector3(0, 0, 0)
     private var blurRadius: CGFloat = 2
+    private let context = CIContext(options: nil)
     
     private var areaRadius: CGFloat = 0.35 {
         didSet {
@@ -120,7 +121,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         imageView.image = pickedImage
         
         saveButton.layer.masksToBounds = true
-        saveButton.layer.cornerRadius = 16
+        saveButton.layer.cornerRadius = 14
     }
     
     
@@ -183,27 +184,21 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touchLocation = touches.first?.location(in: self.view) else { return }
+        guard let touchLocation = touches.first?.location(in: self.sceneView) else { return }
         let hit = sceneView.hitTest(touchLocation)
         if let tappedNode = hit.first?.node {
             guard let image = getImageFromNode(from: tappedNode) else { return }
-            guard let nodeIndex = boxNodes.firstIndex(of: tappedNode) else { return }
-            guard let currentFilter = filters[nodeIndex] else { return }
+            guard let nodeIndex = boxNodes.firstIndex(where: { (node) -> Bool in
+                node.childNodes[1] == tappedNode
+            }) else { return }
+            guard let filteredImage = applyFilter(for: image, filterIndex: nodeIndex) else { return }
             
-            let context = CIContext(options: nil)
+            //setImageForNode(node: boxNodes[nodeIndex], image: filteredImage)
             
-            let beginImage = CIImage(image: image)
-            currentFilter.setValue(beginImage, forKey: kCIInputImageKey)
-            //currentFilter.setValue(blurRadius, forKey: kCIInputRadiusKey)
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "FilterModal") as! FilterModalViewController
+            self.present(vc, animated: true, completion: nil)
             
-            if let output = currentFilter.outputImage {
-                if let cgimg = context.createCGImage(output, from: output.extent) {
-                    let processedImage = UIImage(cgImage: cgimg)
-                    imageView.image = processedImage
-                    //blurRadius += 2
-                    // do something interesting with the processed image
-                }
-            }
         }
     }
     
@@ -212,6 +207,10 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         guard let image = material.diffuse.contents as? UIImage else { return nil }
         
         return image
+    }
+    
+    func setImageForNode(node: SCNNode, image: UIImage) {
+        node.childNodes[1].geometry?.materials[0].diffuse.contents = image
     }
     
     func getPositionForBox(withIndex index: Int) -> SCNVector3 {
@@ -238,6 +237,37 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
+    func updateNodes(withImage image: UIImage) {
+        let proportion = getProportion(fromImage: image)
+        areaRadius = (boxWidth + boxWidth * proportion) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+        
+        for node in boxNodes {
+            
+            let i = boxNodes.firstIndex(of: node)!
+            node.position = getPositionForBox(withIndex: i)
+            
+            let imageNode = node.childNodes[1]
+            let borderNode = node.childNodes[0]
+            
+            if let box = node.geometry as? SCNBox {
+                box.width = boxWidth
+                box.height = boxWidth * proportion
+            }
+            
+            if let box = borderNode.geometry as? SCNBox {
+                box.width = boxWidth + 0.01
+                box.height = boxWidth * proportion + 0.01
+            }
+            
+            if let box = imageNode.geometry as? SCNBox {
+                box.width = boxWidth
+                box.height = boxWidth * proportion
+            }
+            
+            imageNode.geometry?.materials[0].diffuse.contents = image
+        }
+    }
+    
     @IBAction func rigthBarItemTapped(_ sender: UIBarButtonItem) {
         
         let alert = UIAlertController(title: "Where to take photo?", message: nil, preferredStyle: .actionSheet)
@@ -262,35 +292,30 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
-    func updateNodes(withImage image: UIImage) {
-        let proportion = getProportion(fromImage: image)
-        areaRadius = (boxWidth + boxWidth * proportion) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+    func applyFilter(for image: UIImage, filterIndex index: Int) -> UIImage? {
+        guard let filter = filters[index] else { return nil }
         
-        for node in boxNodes {
-            
-            let i = boxNodes.firstIndex(of: node)!
-            node.position = getPositionForBox(withIndex: i)
-            
-            let imageNode = node.childNodes[1]
-            let borderNode = node.childNodes[0]
-
-            if let box = node.geometry as? SCNBox {
-                box.width = boxWidth
-                box.height = boxWidth * proportion
-            }
-
-            if let box = borderNode.geometry as? SCNBox {
-                box.width = boxWidth + 0.01
-                box.height = boxWidth * proportion + 0.01
-            }
-
-            if let box = imageNode.geometry as? SCNBox {
-                box.width = boxWidth
-                box.height = boxWidth * proportion
-            }
-            
-            imageNode.geometry?.materials[0].diffuse.contents = image
+        let beginImage = CIImage(image: image)
+        filter.setValue(beginImage, forKey: kCIInputImageKey)
+        
+        let filterName = filter.name
+        
+        switch filterName {
+        case "CIGaussianBlur":
+            filter.setValue(20, forKey: kCIInputRadiusKey)
+        default:
+            break
         }
+        
+        if let output = filter.outputImage {
+            if let cgimg = context.createCGImage(output, from: output.extent) {
+                let processedImage = UIImage(cgImage: cgimg)
+                
+                return processedImage
+            }
+        }
+        
+        return nil
     }
     
     // MARK: - Save imageView image to photo library
