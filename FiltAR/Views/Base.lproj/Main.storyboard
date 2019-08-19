@@ -118,6 +118,31 @@ in AR</string>
                                     <action selector="saveButtonTapped:" destination="BV1-FR-VrT" eventType="touchUpInside" id="KWr-8x-K9t"/>
                                 </connections>
                             </button>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HkN-44-l6I">
+                                <rect key="frame" x="127.5" y="305.5" width="120" height="120"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="6Nh-Q1-KZ8">
+                                        <rect key="frame" x="30" y="30" width="60" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="ENH-6T-1b6"/>
+                                            <constraint firstAttribute="width" constant="60" id="kp4-lP-qnF"/>
+                                        </constraints>
+                                    </imageView>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="lLT-IN-vN9">
+                                        <rect key="frame" x="41.5" y="41.5" width="37" height="37"/>
+                                        <color key="color" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </activityIndicatorView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="120" id="9Ku-pu-JdX"/>
+                                    <constraint firstItem="6Nh-Q1-KZ8" firstAttribute="centerY" secondItem="HkN-44-l6I" secondAttribute="centerY" id="Baq-xN-qdD"/>
+                                    <constraint firstAttribute="width" constant="120" id="GaU-8C-Nwj"/>
+                                    <constraint firstItem="lLT-IN-vN9" firstAttribute="centerY" secondItem="HkN-44-l6I" secondAttribute="centerY" id="eRk-Ce-iKX"/>
+                                    <constraint firstItem="lLT-IN-vN9" firstAttribute="centerX" secondItem="HkN-44-l6I" secondAttribute="centerX" id="hko-lK-1hU"/>
+                                    <constraint firstItem="6Nh-Q1-KZ8" firstAttribute="centerX" secondItem="HkN-44-l6I" secondAttribute="centerX" id="zWR-Wc-ZpM"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -127,10 +152,12 @@ in AR</string>
                             <constraint firstItem="BdM-Jh-qI3" firstAttribute="top" secondItem="fQZ-KI-GVf" secondAttribute="top" constant="10" id="V4Z-1f-FLi"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="bottom" secondItem="fQZ-KI-GVf" secondAttribute="bottom" id="VpT-BR-CcM"/>
                             <constraint firstItem="kJA-y3-ee8" firstAttribute="width" secondItem="BdM-Jh-qI3" secondAttribute="width" id="WJo-L6-sEC"/>
+                            <constraint firstItem="HkN-44-l6I" firstAttribute="centerX" secondItem="fQZ-KI-GVf" secondAttribute="centerX" id="Xqi-la-LbT"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="trailing" secondItem="fQZ-KI-GVf" secondAttribute="trailing" id="XyZ-9z-H8e"/>
                             <constraint firstItem="kJA-y3-ee8" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fQZ-KI-GVf" secondAttribute="leading" constant="20" id="ibi-N1-9Q4"/>
                             <constraint firstItem="fQZ-KI-GVf" firstAttribute="trailing" secondItem="BdM-Jh-qI3" secondAttribute="trailing" constant="5" id="jsV-QH-egH"/>
                             <constraint firstItem="BrB-h1-WRS" firstAttribute="top" secondItem="U0K-SW-4ec" secondAttribute="top" id="rJc-2c-zQA"/>
+                            <constraint firstItem="HkN-44-l6I" firstAttribute="centerY" secondItem="fQZ-KI-GVf" secondAttribute="centerY" id="st8-bF-3SP"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="fQZ-KI-GVf"/>
                     </view>
@@ -143,6 +170,9 @@ in AR</string>
                     </navigationItem>
                     <connections>
                         <outlet property="imageView" destination="BdM-Jh-qI3" id="COs-1b-ZWF"/>
+                        <outlet property="popupImageView" destination="6Nh-Q1-KZ8" id="OP7-Q0-Oo4"/>
+                        <outlet property="popupSpinner" destination="lLT-IN-vN9" id="OU4-p1-GSQ"/>
+                        <outlet property="popupView" destination="HkN-44-l6I" id="zSf-NA-15v"/>
                         <outlet property="saveButton" destination="kJA-y3-ee8" id="cPk-rg-cCy"/>
                         <outlet property="sceneView" destination="BrB-h1-WRS" id="5nT-qQ-ynl"/>
                     </connections>

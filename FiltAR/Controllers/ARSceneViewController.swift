@@ -15,6 +15,9 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     @IBOutlet var sceneView: ARSCNView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var saveButton: UIButton!
+    @IBOutlet weak var popupView: UIView!
+    @IBOutlet weak var popupImageView: UIImageView!
+    @IBOutlet weak var popupSpinner: UIActivityIndicatorView!
     private let imagePicker = UIImagePickerController()
     
     public var pickedImage: UIImage! {
@@ -42,6 +45,8 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         self.navigationController?.navigationBar.topItem?.backBarButtonItem = backButton
         
         setupSaveButtonUI()
+        popupView.layer.masksToBounds = true
+        popupView.layer.cornerRadius = 14
         
         imageView.image = pickedImage
         
@@ -261,16 +266,38 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     @IBAction func saveButtonTapped(_ sender: UIButton) {
         
         if let imageForSaving = imageView.image {
+            saveButton.isEnabled = false
+            popupImageView.isHidden = true
+            
+            popupView.isHidden = false
+            popupView.alpha = 1
+            popupSpinner.startAnimating()
+            
             UIImageWriteToSavedPhotosAlbum(imageForSaving, self, #selector(image(_:didFinishSavingWithError:contextInfo:)), nil)
         }
-        
     }
     
     @objc func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
         if let error = error {
+            popupImageView.image = UIImage(named: "ErrorIcon")
             print("Error with saving photo, \(error)")
         } else {
-            print("Saved!")
+            popupImageView.image = UIImage(named: "SuccessIcon")
+        }
+        
+        popupSpinner.stopAnimating()
+        popupImageView.alpha = 0
+        popupImageView.isHidden = false
+        UIView.animate(withDuration: 0.5) {
+            self.popupImageView.alpha = 1
+        }
+        
+        
+        UIView.animate(withDuration: 0.2, delay: 2, animations: {
+            self.popupView.alpha = 0
+        }) { (_) in
+            self.popupView.isHidden = true
+            self.saveButton.isEnabled = true
         }
     }
     
@@ -291,6 +318,9 @@ extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationCo
             
             self.pickedImage = pickedImage
             updateNodes(withImage: pickedImage)
+            let pixelWidth = pickedImage.size.width * pickedImage.scale
+            let pixelHeight = pickedImage.size.height * pickedImage.scale
+            print(pixelWidth, pixelHeight)
         } else {
             dismiss(animated: true, completion: nil)
         }
