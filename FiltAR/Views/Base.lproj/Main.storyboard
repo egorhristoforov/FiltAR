@@ -211,9 +211,13 @@ in AR</string>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
+                                <gestureRecognizers/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="593" id="iY5-St-LRZ"/>
                                 </constraints>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="aI0-JD-11h" appends="YES" id="lvZ-Rt-wpi"/>
+                                </connections>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -228,9 +232,15 @@ in AR</string>
                         <outlet property="blurEffect" destination="Uc6-7K-IC5" id="vgK-Qp-vJe"/>
                         <outlet property="closeButton" destination="mTv-ha-fmI" id="0gb-0J-Fif"/>
                         <outlet property="modalView" destination="0OE-CZ-NNl" id="ghJ-hP-4QO"/>
+                        <outlet property="panGestureRecognizer" destination="aI0-JD-11h" id="HPU-WX-L4d"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="IxI-Ye-Pzz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <panGestureRecognizer minimumNumberOfTouches="1" id="aI0-JD-11h">
+                    <connections>
+                        <action selector="handlePanGesture:" destination="0z3-zg-Tpa" id="zX6-ld-dgJ"/>
+                    </connections>
+                </panGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1077.5999999999999" y="819.94002998500753"/>
         </scene>
