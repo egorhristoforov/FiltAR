@@ -22,7 +22,7 @@ class FilterModalViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        UIView.animate(withDuration: 0.1, delay: 0.28, animations: {
+        UIView.animate(withDuration: 0.2, delay: 0.375, animations: {
             self.blurEffect.alpha = 1
         }, completion: nil)
     }
@@ -32,9 +32,7 @@ class FilterModalViewController: UIViewController {
     }
 
     @IBAction func closeModal(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.1) {
-            self.blurEffect.alpha = 0
-        }
+        self.blurEffect.alpha = 0
         self.dismiss(animated: true, completion: nil)
     }
 }
