@@ -201,19 +201,21 @@ in AR</string>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0OE-CZ-NNl">
                                 <rect key="frame" x="0.0" y="74" width="375" height="593"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mTv-ha-fmI">
-                                        <rect key="frame" x="28" y="29" width="46" height="30"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <state key="normal" title="Button"/>
-                                        <connections>
-                                            <action selector="closeModal:" destination="0z3-zg-Tpa" eventType="touchUpInside" id="FLw-co-Dwd"/>
-                                        </connections>
-                                    </button>
+                                    <view alpha="0.5" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lLs-DW-ZQS">
+                                        <rect key="frame" x="145.5" y="8" width="84" height="8"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="8" id="81q-Bk-4Pp"/>
+                                            <constraint firstAttribute="width" constant="84" id="HQI-9d-alL"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                 <gestureRecognizers/>
                                 <constraints>
+                                    <constraint firstItem="lLs-DW-ZQS" firstAttribute="top" secondItem="0OE-CZ-NNl" secondAttribute="top" constant="8" id="3tC-JS-JPk"/>
                                     <constraint firstAttribute="height" constant="593" id="iY5-St-LRZ"/>
+                                    <constraint firstItem="lLs-DW-ZQS" firstAttribute="centerX" secondItem="0OE-CZ-NNl" secondAttribute="centerX" id="wgf-Zk-zpa"/>
                                 </constraints>
                                 <connections>
                                     <outletCollection property="gestureRecognizers" destination="aI0-JD-11h" appends="YES" id="lvZ-Rt-wpi"/>
@@ -230,7 +232,7 @@ in AR</string>
                     </view>
                     <connections>
                         <outlet property="blurEffect" destination="Uc6-7K-IC5" id="vgK-Qp-vJe"/>
-                        <outlet property="closeButton" destination="mTv-ha-fmI" id="0gb-0J-Fif"/>
+                        <outlet property="closeView" destination="lLs-DW-ZQS" id="J5l-Y6-Rml"/>
                         <outlet property="modalView" destination="0OE-CZ-NNl" id="ghJ-hP-4QO"/>
                         <outlet property="panGestureRecognizer" destination="aI0-JD-11h" id="HPU-WX-L4d"/>
                     </connections>
