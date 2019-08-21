@@ -44,28 +44,36 @@ class FilterModalViewController: UIViewController {
     }
     
     @IBAction func handlePanGesture(_ sender: UIPanGestureRecognizer) {
+        
+        defer {
+            sender.setTranslation(CGPoint.zero, in: self.view)
+        }
+        
+        guard let view = sender.view else { return }
+        
         let translation = sender.translation(in: self.view)
-        if let view = sender.view {
-            if view.center.y + translation.y >= defaultCenterModal.y {
-                view.center = CGPoint(x: view.center.x, y: view.center.y + translation.y)
-                animator?.fractionComplete = CGFloat((abs(defaultCenterModal.y - view.center.y) / defaultCenterModal.y))
-            }
-            
-            if sender.state == .ended {
-                if view.center.y + translation.y >= defaultCenterModal.y * 1.3 {
-                    self.blurEffect.alpha = 0
-                    animator?.stopAnimation(true)
-                    self.dismiss(animated: true, completion: nil)
-                } else {
-                    UIView.animate(withDuration: 0.2) {
-                        view.center.y = self.defaultCenterModal.y
-                        self.animator?.fractionComplete = CGFloat((abs(self.defaultCenterModal.y - view.center.y) / self.defaultCenterModal.y))
-                    }
+        
+        if view.center.y + translation.y >= defaultCenterModal.y * 1.3 {
+            view.center = CGPoint(x: view.center.x, y: view.center.y + translation.y / 2)
+            animator?.fractionComplete = CGFloat((abs(defaultCenterModal.y - view.center.y) / defaultCenterModal.y))
+        } else if view.center.y + translation.y >= defaultCenterModal.y {
+            view.center = CGPoint(x: view.center.x, y: view.center.y + translation.y)
+            animator?.fractionComplete = CGFloat((abs(defaultCenterModal.y - view.center.y) / defaultCenterModal.y))
+        }
+        
+        if sender.state == .ended {
+            if view.center.y + translation.y >= defaultCenterModal.y * 1.3 {
+                self.blurEffect.alpha = 0
+                animator?.stopAnimation(true)
+                self.dismiss(animated: true, completion: nil)
+            } else {
+                UIView.animate(withDuration: 0.2) {
+                    view.center.y = self.defaultCenterModal.y
+                    self.animator?.fractionComplete = CGFloat((abs(self.defaultCenterModal.y - view.center.y) / self.defaultCenterModal.y))
                 }
             }
         }
         
-        sender.setTranslation(CGPoint.zero, in: self.view)
     }
 }
 
