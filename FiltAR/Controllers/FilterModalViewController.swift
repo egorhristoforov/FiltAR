@@ -13,15 +13,24 @@ class FilterModalViewController: UIViewController {
     @IBOutlet weak var modalView: UIView!
     @IBOutlet weak var blurEffect: UIVisualEffectView!
     @IBOutlet weak var closeView: UIView!
+    @IBOutlet weak var modalTitleLabel: UILabel!
+    @IBOutlet weak var modalImage: UIImageView!
+    @IBOutlet weak var modalSlider: UISlider!
+    @IBOutlet weak var modalApplyButton: UIButton!
+    @IBOutlet weak var modalResetButton: UIButton!
     
     @IBOutlet var panGestureRecognizer: UIPanGestureRecognizer!
     private var defaultCenterModal = CGPoint.zero
     private var animator: UIViewPropertyAnimator?
     
+    public var image: UIImage!
+    public var titleLabelText: String!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
+        setupData()
         blurEffect.alpha = 0
         panGestureRecognizer.maximumNumberOfTouches = 1
         defaultCenterModal = modalView.center
@@ -40,7 +49,19 @@ class FilterModalViewController: UIViewController {
     func setupUI() {
         modalView.roundCorners(corners: [.topLeft, .topRight], radius: 14.0)
         closeView.layer.masksToBounds = true
-        closeView.layer.cornerRadius = 4
+        closeView.layer.cornerRadius = 2
+        modalApplyButton.layer.masksToBounds = true
+        modalApplyButton.layer.cornerRadius = 14
+        
+        modalResetButton.layer.masksToBounds = true
+        modalResetButton.layer.cornerRadius = 14
+        modalResetButton.layer.borderWidth = 0.6
+        modalResetButton.layer.borderColor = UIColor.white.cgColor
+    }
+    
+    func setupData() {
+        self.modalImage.image = self.image
+        self.modalTitleLabel.text = self.titleLabelText
     }
     
     @IBAction func handlePanGesture(_ sender: UIPanGestureRecognizer) {
@@ -53,8 +74,8 @@ class FilterModalViewController: UIViewController {
         
         let translation = sender.translation(in: self.view)
         
-        if view.center.y + translation.y >= defaultCenterModal.y * 1.3 {
-            view.center = CGPoint(x: view.center.x, y: view.center.y + translation.y / 2)
+        if view.center.y + translation.y >= defaultCenterModal.y * 1.2 {
+            view.center = CGPoint(x: view.center.x, y: view.center.y + translation.y / 2.5)
             animator?.fractionComplete = CGFloat((abs(defaultCenterModal.y - view.center.y) / defaultCenterModal.y))
         } else if view.center.y + translation.y >= defaultCenterModal.y {
             view.center = CGPoint(x: view.center.x, y: view.center.y + translation.y)
@@ -62,7 +83,7 @@ class FilterModalViewController: UIViewController {
         }
         
         if sender.state == .ended {
-            if view.center.y + translation.y >= defaultCenterModal.y * 1.3 {
+            if view.center.y + translation.y >= defaultCenterModal.y * 1.2 {
                 self.blurEffect.alpha = 0
                 animator?.stopAnimation(true)
                 self.dismiss(animated: true, completion: nil)
@@ -74,15 +95,5 @@ class FilterModalViewController: UIViewController {
             }
         }
         
-    }
-}
-
-
-extension UIView {
-    func roundCorners(corners: UIRectCorner, radius: CGFloat) {
-        let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        let mask = CAShapeLayer()
-        mask.path = path.cgPath
-        layer.mask = mask
     }
 }

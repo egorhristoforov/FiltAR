@@ -197,6 +197,8 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "FilterModal") as! FilterModalViewController
+            vc.image = self.pickedImage
+            vc.titleLabelText = "Gaussian blur"
             self.present(vc, animated: true, completion: nil)
             
         }
