@@ -153,12 +153,9 @@ class FilterModalViewController: UIViewController {
 
 extension FilterModalViewController: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        print("Class: \(touch.view)")
         if let isSlider = touch.view?.isKind(of: UISlider.self) {
-            print("isSlider equal \(isSlider)")
             return !isSlider
         } else {
-            print("isSlider equal nil")
             return true
         }
     }
