@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol FilterModalDelegate {
+    func updateController(withImage image: UIImage)
+}
+
 class FilterModalViewController: UIViewController {
 
     @IBOutlet weak var modalView: UIView!
@@ -23,8 +27,16 @@ class FilterModalViewController: UIViewController {
     private var defaultCenterModal = CGPoint.zero
     private var animator: UIViewPropertyAnimator?
     
-    public var image: UIImage!
-    public var titleLabelText: String!
+    private var processedImage: UIImage!
+    
+    private var context: CIContext!
+    private var beginImage: CIImage!
+    
+    var image: UIImage!
+    var titleLabelText: String!
+    var filter: CIFilter!
+    
+    var delegate: FilterModalDelegate!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,11 +45,13 @@ class FilterModalViewController: UIViewController {
         setupData()
         blurEffect.alpha = 0
         panGestureRecognizer.maximumNumberOfTouches = 1
+        panGestureRecognizer.delegate = self
         defaultCenterModal = modalView.center
         
         animator = UIViewPropertyAnimator(duration: 1, curve: .linear, animations: {
             self.blurEffect.effect = nil
         })
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -60,9 +74,43 @@ class FilterModalViewController: UIViewController {
     }
     
     func setupData() {
-        self.modalImage.image = self.image
-        self.modalTitleLabel.text = self.titleLabelText
+        modalImage.image = image
+        modalTitleLabel.text = titleLabelText
+        processedImage = image
+        
+        beginImage = CIImage(image: image)
+        filter.setValue(beginImage, forKey: kCIInputImageKey)
+        
+        context = CIContext(options:nil)
     }
+    
+    @IBAction func changedSliderValue(_ sender: UISlider) {
+        
+        let sliderValue = sender.value
+        
+        filter.setValue(sliderValue, forKey: kCIInputRadiusKey)
+        guard let outputImage = filter.outputImage else { return }
+        
+        guard let cgimg = context.createCGImage(outputImage, from: outputImage.extent) else { return }
+        
+        let newImage = UIImage(cgImage: cgimg)
+        
+        modalImage.image = newImage
+        processedImage = newImage
+    }
+    
+    
+    @IBAction func resetButtonTapped(_ sender: UIButton) {
+        modalImage.image = image
+        processedImage = image
+        modalSlider.value = 0
+    }
+    
+    @IBAction func applyButtonTapped(_ sender: UIButton) {
+        delegate.updateController(withImage: processedImage)
+        closeModal()
+    }
+    
     
     @IBAction func handlePanGesture(_ sender: UIPanGestureRecognizer) {
         
@@ -84,9 +132,7 @@ class FilterModalViewController: UIViewController {
         
         if sender.state == .ended {
             if view.center.y + translation.y >= defaultCenterModal.y * 1.2 {
-                self.blurEffect.alpha = 0
-                animator?.stopAnimation(true)
-                self.dismiss(animated: true, completion: nil)
+                closeModal()
             } else {
                 UIView.animate(withDuration: 0.2) {
                     view.center.y = self.defaultCenterModal.y
@@ -95,5 +141,25 @@ class FilterModalViewController: UIViewController {
             }
         }
         
+    }
+    
+    func closeModal() {
+        blurEffect.alpha = 0
+        animator?.stopAnimation(true)
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+}
+
+extension FilterModalViewController: UIGestureRecognizerDelegate {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        print("Class: \(touch.view)")
+        if let isSlider = touch.view?.isKind(of: UISlider.self) {
+            print("isSlider equal \(isSlider)")
+            return !isSlider
+        } else {
+            print("isSlider equal nil")
+            return true
+        }
     }
 }

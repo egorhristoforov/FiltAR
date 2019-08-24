@@ -216,7 +216,7 @@ in AR</string>
                                         </constraints>
                                     </view>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UIS-zN-ney">
-                                        <rect key="frame" x="22" y="80" width="330" height="307"/>
+                                        <rect key="frame" x="22" y="125" width="330" height="262"/>
                                     </imageView>
                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="22" translatesAutoresizingMaskIntoConstraints="NO" id="CGK-wG-dfg">
                                         <rect key="frame" x="22" y="526" width="330" height="42"/>
@@ -227,6 +227,9 @@ in AR</string>
                                                 <state key="normal" title="Reset">
                                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="resetButtonTapped:" destination="0z3-zg-Tpa" eventType="touchUpInside" id="aGj-Ey-lSo"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jhw-xn-LQl">
                                                 <rect key="frame" x="176" y="0.0" width="154" height="42"/>
@@ -235,6 +238,9 @@ in AR</string>
                                                 <state key="normal" title="Apply filter">
                                                     <color key="titleColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>
+                                                <connections>
+                                                    <action selector="applyButtonTapped:" destination="0z3-zg-Tpa" eventType="touchUpInside" id="fJa-6t-yRC"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -244,10 +250,13 @@ in AR</string>
                                         <color key="textColor" white="1" alpha="0.80000000000000004" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="3" minValue="0.0" maxValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="hr2-hz-xdW">
+                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="hr2-hz-xdW">
                                         <rect key="frame" x="20" y="442" width="334" height="31"/>
                                         <color key="minimumTrackTintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="maximumTrackTintColor" red="1" green="1" blue="1" alpha="0.10000000000000001" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <connections>
+                                            <action selector="changedSliderValue:" destination="0z3-zg-Tpa" eventType="valueChanged" id="e8q-P1-pqP"/>
+                                        </connections>
                                     </slider>
                                 </subviews>
                                 <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
@@ -264,7 +273,7 @@ in AR</string>
                                     <constraint firstItem="xi5-DL-ZFs" firstAttribute="top" secondItem="lLs-DW-ZQS" secondAttribute="bottom" constant="10" id="Pjf-5X-exh"/>
                                     <constraint firstItem="CGK-wG-dfg" firstAttribute="leading" secondItem="0OE-CZ-NNl" secondAttribute="leading" constant="22" id="Rtu-gx-g4r"/>
                                     <constraint firstItem="8cb-ja-Q9d" firstAttribute="top" secondItem="xi5-DL-ZFs" secondAttribute="bottom" constant="10" id="XWs-5I-en3"/>
-                                    <constraint firstItem="UIS-zN-ney" firstAttribute="top" secondItem="8cb-ja-Q9d" secondAttribute="bottom" constant="10" id="cLp-2f-evP"/>
+                                    <constraint firstItem="UIS-zN-ney" firstAttribute="top" secondItem="8cb-ja-Q9d" secondAttribute="bottom" constant="55" id="cLp-2f-evP"/>
                                     <constraint firstItem="UIS-zN-ney" firstAttribute="leading" secondItem="0OE-CZ-NNl" secondAttribute="leading" constant="22" id="k9J-f7-7R3"/>
                                     <constraint firstAttribute="trailing" secondItem="8cb-ja-Q9d" secondAttribute="trailing" id="lAo-cy-Y7Z"/>
                                     <constraint firstAttribute="trailing" secondItem="CGK-wG-dfg" secondAttribute="trailing" constant="23" id="neS-GR-NFb"/>

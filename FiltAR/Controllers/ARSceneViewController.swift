@@ -187,18 +187,17 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         guard let touchLocation = touches.first?.location(in: self.sceneView) else { return }
         let hit = sceneView.hitTest(touchLocation)
         if let tappedNode = hit.first?.node {
-            guard let image = getImageFromNode(from: tappedNode) else { return }
             guard let nodeIndex = boxNodes.firstIndex(where: { (node) -> Bool in
                 node.childNodes[1] == tappedNode
             }) else { return }
-            guard let filteredImage = applyFilter(for: image, filterIndex: nodeIndex) else { return }
-            
-            //setImageForNode(node: boxNodes[nodeIndex], image: filteredImage)
+            guard let filter = filters[nodeIndex] else { return }
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "FilterModal") as! FilterModalViewController
             vc.image = self.pickedImage
             vc.titleLabelText = "Gaussian blur"
+            vc.filter = filter
+            vc.delegate = self
             self.present(vc, animated: true, completion: nil)
             
         }
@@ -239,31 +238,42 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
-    func updateNodes(withImage image: UIImage) {
-        let proportion = getProportion(fromImage: image)
-        areaRadius = (boxWidth + boxWidth * proportion) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+    func updateNodes(withImage image: UIImage, positionShouldChange: Bool) {
+        
+        var proportion: CGFloat = 0
+        
+        if positionShouldChange {
+            proportion = getProportion(fromImage: image)
+            areaRadius = (boxWidth + boxWidth * proportion + 2.0) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+        }
         
         for node in boxNodes {
             
-            let i = boxNodes.firstIndex(of: node)!
-            node.position = getPositionForBox(withIndex: i)
-            
             let imageNode = node.childNodes[1]
-            let borderNode = node.childNodes[0]
             
-            if let box = node.geometry as? SCNBox {
-                box.width = boxWidth
-                box.height = boxWidth * proportion
-            }
-            
-            if let box = borderNode.geometry as? SCNBox {
-                box.width = boxWidth + 0.01
-                box.height = boxWidth * proportion + 0.01
-            }
-            
-            if let box = imageNode.geometry as? SCNBox {
-                box.width = boxWidth
-                box.height = boxWidth * proportion
+            if positionShouldChange {
+                let i = boxNodes.firstIndex(of: node)!
+                
+                if positionShouldChange {
+                    node.position = getPositionForBox(withIndex: i)
+                }
+                
+                let borderNode = node.childNodes[0]
+                
+                if let box = node.geometry as? SCNBox {
+                    box.width = boxWidth
+                    box.height = boxWidth * proportion
+                }
+                
+                if let box = borderNode.geometry as? SCNBox {
+                    box.width = boxWidth + 0.01
+                    box.height = boxWidth * proportion + 0.01
+                }
+                
+                if let box = imageNode.geometry as? SCNBox {
+                    box.width = boxWidth
+                    box.height = boxWidth * proportion
+                }
             }
             
             imageNode.geometry?.materials[0].diffuse.contents = image
@@ -402,11 +412,22 @@ extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationCo
             dismiss(animated: true, completion: nil)
             
             self.pickedImage = pickedImage
-            updateNodes(withImage: self.pickedImage)
+            updateNodes(withImage: self.pickedImage, positionShouldChange: true)
             
         } else {
             dismiss(animated: true, completion: nil)
         }
+    }
+    
+}
+
+// MARK: - Extension for filter modal controller
+
+extension ARSceneViewController: FilterModalDelegate {
+    
+    func updateController(withImage image: UIImage) {
+        pickedImage = image
+        updateNodes(withImage: image, positionShouldChange: false)
     }
     
 }
