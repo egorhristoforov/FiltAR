@@ -30,7 +30,9 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     private var boxWidth: CGFloat = 0.9
     private var startingPosition = SCNVector3(0, 0, 0)
     private var blurRadius: CGFloat = 2
-    private let context = CIContext(options: nil)
+    
+    private var context: CIContext!
+    private var beginImage: CIImage!
     
     private var areaRadius: CGFloat = 0.35 {
         didSet {
@@ -61,6 +63,10 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
         nodesCount = filters.count
         
+        beginImage = CIImage(image: pickedImage)
+        
+        context = CIContext(options:nil)
+        
         let scene = SCNScene()
         sceneView.scene = scene
         
@@ -68,7 +74,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         areaRadius = (boxWidth + boxWidth * proportion /* + 2.0 */) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         
         for i in 0..<nodesCount {
-            let boxNode = createBox(boxWidth: boxWidth, boxHeight: boxWidth * proportion, boxLength: 0.01)
+            let boxNode = createBox(boxWidth: boxWidth, boxHeight: boxWidth * proportion, boxLength: 0.01, index: i)
             boxNode.position = getPositionForBox(withIndex: i)
             boxNodes.append(boxNode)
             scene.rootNode.addChildNode(boxNode)
@@ -128,7 +134,22 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     
     // MARK: - Create boxes with filters
     
-    func createBox(boxWidth width: CGFloat, boxHeight height: CGFloat, boxLength length: CGFloat, boxRadius radius: CGFloat = 0) -> SCNNode {
+    func applyFilter(filterIndex index: Int) -> UIImage? {
+        guard let filter = filters[index] else { return nil }
+        
+        filter.filter.setValue(beginImage, forKey: kCIInputImageKey)
+        let filterValue = filter.endValue / 2.0
+        filter.updateKeyValue(newValue: filterValue)
+        if let outputImage = filter.filter.outputImage, let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
+            let newImage = UIImage(cgImage: cgimg)
+            return newImage
+        }
+        
+        return nil
+    }
+
+    
+    func createBox(boxWidth width: CGFloat, boxHeight height: CGFloat, boxLength length: CGFloat, boxRadius radius: CGFloat = 0, index: Int) -> SCNNode {
         
         let borderBox = SCNBox(width: width + 0.01, height: height + 0.01, length: length + 0.01, chamferRadius: radius)
         
@@ -140,8 +161,25 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         let box = SCNBox(width: width, height: height, length: length, chamferRadius: radius)
         
         let frontSideMaterial = SCNMaterial()
+//        if let filter = filters[index] {
+//            filter.filter.setValue(beginImage, forKey: kCIInputImageKey)
+//            let filterValue = filter.endValue / 2.0
+//            filter.updateKeyValue(newValue: filterValue)
+//            if let outputImage = filter.filter.outputImage, let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
+//                let newImage = UIImage(cgImage: cgimg)
+//                frontSideMaterial.diffuse.contents = newImage
+//            } else {
+//                frontSideMaterial.diffuse.contents = pickedImage
+//            }
+//        } else {
+//            frontSideMaterial.diffuse.contents = pickedImage
+//        }
         
-        frontSideMaterial.diffuse.contents = pickedImage
+        if let processedImage = applyFilter(filterIndex: index) {
+            frontSideMaterial.diffuse.contents = processedImage
+        } else {
+            frontSideMaterial.diffuse.contents = pickedImage
+        }
         
         let rightSideMaterial = SCNMaterial()
         rightSideMaterial.diffuse.contents = UIColor.white
@@ -241,21 +279,21 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
-    func updateNodes(withImage image: UIImage, positionShouldChange: Bool) {
+    func updateNodes(positionShouldChange: Bool) {
         
         var proportion: CGFloat = 0
         
         if positionShouldChange {
-            proportion = getProportion(fromImage: image)
+            proportion = getProportion(fromImage: pickedImage)
             areaRadius = (boxWidth + boxWidth * proportion /* + 2.0 */) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         }
         
         for node in boxNodes {
             
             let imageNode = node.childNodes[1]
+            let i = boxNodes.firstIndex(of: node)!
             
             if positionShouldChange {
-                let i = boxNodes.firstIndex(of: node)!
                 
                 if positionShouldChange {
                     node.position = getPositionForBox(withIndex: i)
@@ -279,7 +317,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
                 }
             }
             
-            imageNode.geometry?.materials[0].diffuse.contents = image
+            imageNode.geometry?.materials[0].diffuse.contents = applyFilter(filterIndex: i)
         }
     }
     
@@ -306,32 +344,6 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
 
         
     }
-    
-//    func applyFilter(for image: UIImage, filterIndex index: Int) -> UIImage? {
-//        guard let filter = filters[index] else { return nil }
-//
-//        let beginImage = CIImage(image: image)
-//        filter.setValue(beginImage, forKey: kCIInputImageKey)
-//
-//        let filterName = filter.name
-//
-//        switch filterName {
-//        case "CIGaussianBlur":
-//            filter.setValue(20, forKey: kCIInputRadiusKey)
-//        default:
-//            break
-//        }
-//
-//        if let output = filter.outputImage {
-//            if let cgimg = context.createCGImage(output, from: output.extent) {
-//                let processedImage = UIImage(cgImage: cgimg)
-//
-//                return processedImage
-//            }
-//        }
-//
-//        return nil
-//    }
     
     // MARK: - Save imageView image to photo library
     
@@ -415,7 +427,8 @@ extension ARSceneViewController: UIImagePickerControllerDelegate, UINavigationCo
             dismiss(animated: true, completion: nil)
             
             self.pickedImage = pickedImage
-            updateNodes(withImage: self.pickedImage, positionShouldChange: true)
+            beginImage = CIImage(image: pickedImage)
+            updateNodes(positionShouldChange: true)
             
         } else {
             dismiss(animated: true, completion: nil)
@@ -430,7 +443,8 @@ extension ARSceneViewController: FilterModalDelegate {
     
     func updateController(withImage image: UIImage) {
         pickedImage = image
-        updateNodes(withImage: image, positionShouldChange: true)
+        beginImage = CIImage(image: pickedImage)
+        updateNodes(positionShouldChange: true)
     }
     
 }
