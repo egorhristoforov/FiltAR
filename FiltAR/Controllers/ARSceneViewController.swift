@@ -25,7 +25,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - Global Variables
     
     private var boxNodes = [SCNNode]()
-    private var filters = [CIFilter?]()
+    private var filters = [Filter?]()
     private var nodesCount = 0
     private var boxWidth: CGFloat = 0.9
     private var startingPosition = SCNVector3(0, 0, 0)
@@ -57,14 +57,15 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         imagePicker.allowsEditing = false
         sceneView.delegate = self
         
-        filters = [CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur"), CIFilter(name: "CIGaussianBlur")]
+        filters = [Filter(filterType: .boxBlur), Filter(filterType: .gaussianBlur), Filter(filterType: .motionBlur), Filter(filterType: .saturationControl), Filter(filterType: .brightnessControl), Filter(filterType: .contrastControl), Filter(filterType: .exposureAdjust), Filter(filterType: .hueAdjest), Filter(filterType: .vibrance), Filter(filterType: .sepiaTone), Filter(filterType: .straightenFilter), Filter(filterType: .sharpenLuminance), Filter(filterType: .edges), Filter(filterType: .edgeWork), Filter(filterType: .hexagonalPixellate), Filter(filterType: .pixellate), Filter(filterType: .kaleidoscope)]
+        
         nodesCount = filters.count
         
         let scene = SCNScene()
         sceneView.scene = scene
         
         let proportion = getProportion(fromImage: pickedImage)
-        areaRadius = (boxWidth + boxWidth * proportion + 2.0) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+        areaRadius = (boxWidth + boxWidth * proportion /* + 2.0 */) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         
         for i in 0..<nodesCount {
             let boxNode = createBox(boxWidth: boxWidth, boxHeight: boxWidth * proportion, boxLength: 0.01)
@@ -164,13 +165,15 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         let borderNode = SCNNode(geometry: borderBox)
         
         borderNode.position = SCNVector3(0, 0, 0)
-        imageNode.position = SCNVector3(0, 0, 0.009)
+        imageNode.position = SCNVector3(0, 0, 0.02)
         
         resultNode.addChildNode(borderNode)
         resultNode.addChildNode(imageNode)
         
-        let moveDown = SCNAction.move(by: SCNVector3(0, -0.025, 0), duration: 1)
-        let moveUp = SCNAction.move(by: SCNVector3(0,0.025,0), duration: 1)
+        //let moveDown = SCNAction.move(by: SCNVector3(0, -0.025, 0), duration: 1)
+        //let moveUp = SCNAction.move(by: SCNVector3(0,0.025,0), duration: 1)
+        let moveDown = SCNAction.move(by: SCNVector3(0, -0.025 * Double(nodesCount), 0), duration: 1)
+        let moveUp = SCNAction.move(by: SCNVector3(0,0.025 * Double(nodesCount),0), duration: 1)
         let waitAction = SCNAction.wait(duration: 0.1)
         let hoverSequence = SCNAction.sequence([moveUp,waitAction,moveDown, waitAction])
         let loopSequence = SCNAction.repeatForever(hoverSequence)
@@ -195,7 +198,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             let vc = storyboard.instantiateViewController(withIdentifier: "FilterModal") as! FilterModalViewController
             vc.image = self.pickedImage
-            vc.titleLabelText = "Gaussian blur"
+            vc.titleLabelText = filter.name
             vc.filter = filter
             vc.delegate = self
             self.present(vc, animated: true, completion: nil)
@@ -244,7 +247,7 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
         if positionShouldChange {
             proportion = getProportion(fromImage: image)
-            areaRadius = (boxWidth + boxWidth * proportion + 2.0) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
+            areaRadius = (boxWidth + boxWidth * proportion /* + 2.0 */) / (2 * sin(2 * CGFloat.pi / CGFloat(2 * nodesCount)))
         }
         
         for node in boxNodes {
@@ -304,31 +307,31 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         
     }
     
-    func applyFilter(for image: UIImage, filterIndex index: Int) -> UIImage? {
-        guard let filter = filters[index] else { return nil }
-        
-        let beginImage = CIImage(image: image)
-        filter.setValue(beginImage, forKey: kCIInputImageKey)
-        
-        let filterName = filter.name
-        
-        switch filterName {
-        case "CIGaussianBlur":
-            filter.setValue(20, forKey: kCIInputRadiusKey)
-        default:
-            break
-        }
-        
-        if let output = filter.outputImage {
-            if let cgimg = context.createCGImage(output, from: output.extent) {
-                let processedImage = UIImage(cgImage: cgimg)
-                
-                return processedImage
-            }
-        }
-        
-        return nil
-    }
+//    func applyFilter(for image: UIImage, filterIndex index: Int) -> UIImage? {
+//        guard let filter = filters[index] else { return nil }
+//
+//        let beginImage = CIImage(image: image)
+//        filter.setValue(beginImage, forKey: kCIInputImageKey)
+//
+//        let filterName = filter.name
+//
+//        switch filterName {
+//        case "CIGaussianBlur":
+//            filter.setValue(20, forKey: kCIInputRadiusKey)
+//        default:
+//            break
+//        }
+//
+//        if let output = filter.outputImage {
+//            if let cgimg = context.createCGImage(output, from: output.extent) {
+//                let processedImage = UIImage(cgImage: cgimg)
+//
+//                return processedImage
+//            }
+//        }
+//
+//        return nil
+//    }
     
     // MARK: - Save imageView image to photo library
     
@@ -427,7 +430,7 @@ extension ARSceneViewController: FilterModalDelegate {
     
     func updateController(withImage image: UIImage) {
         pickedImage = image
-        updateNodes(withImage: image, positionShouldChange: false)
+        updateNodes(withImage: image, positionShouldChange: true)
     }
     
 }

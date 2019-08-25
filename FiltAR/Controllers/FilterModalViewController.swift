@@ -34,7 +34,7 @@ class FilterModalViewController: UIViewController {
     
     var image: UIImage!
     var titleLabelText: String!
-    var filter: CIFilter!
+    var filter: Filter!
     
     var delegate: FilterModalDelegate!
     
@@ -79,17 +79,20 @@ class FilterModalViewController: UIViewController {
         processedImage = image
         
         beginImage = CIImage(image: image)
-        filter.setValue(beginImage, forKey: kCIInputImageKey)
+        filter.filter.setValue(beginImage, forKey: kCIInputImageKey)
         
         context = CIContext(options:nil)
+        modalSlider.minimumValue = filter.startValue
+        modalSlider.maximumValue = filter.endValue
     }
     
     @IBAction func changedSliderValue(_ sender: UISlider) {
         
         let sliderValue = sender.value
         
-        filter.setValue(sliderValue, forKey: kCIInputRadiusKey)
-        guard let outputImage = filter.outputImage else { return }
+        //filter.filter.setValue(sliderValue, forKey: filter.inputKey)
+        filter.updateKeyValue(newValue: sliderValue)
+        guard let outputImage = filter.filter.outputImage else { return }
         
         guard let cgimg = context.createCGImage(outputImage, from: outputImage.extent) else { return }
         

@@ -281,7 +281,7 @@ in AR</string>
                                                     </button>
                                                 </subviews>
                                             </stackView>
-                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="hr2-hz-xdW">
+                                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="-10" maxValue="10" translatesAutoresizingMaskIntoConstraints="NO" id="hr2-hz-xdW">
                                                 <rect key="frame" x="18" y="0.0" width="334" height="31"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="30" id="OSk-g3-2OC"/>
