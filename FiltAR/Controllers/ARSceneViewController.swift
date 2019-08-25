@@ -29,7 +29,6 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
     private var nodesCount = 0
     private var boxWidth: CGFloat = 0.9
     private var startingPosition = SCNVector3(0, 0, 0)
-    private var blurRadius: CGFloat = 2
     
     private var context: CIContext!
     private var beginImage: CIImage!
@@ -161,19 +160,6 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         let box = SCNBox(width: width, height: height, length: length, chamferRadius: radius)
         
         let frontSideMaterial = SCNMaterial()
-//        if let filter = filters[index] {
-//            filter.filter.setValue(beginImage, forKey: kCIInputImageKey)
-//            let filterValue = filter.endValue / 2.0
-//            filter.updateKeyValue(newValue: filterValue)
-//            if let outputImage = filter.filter.outputImage, let cgimg = context.createCGImage(outputImage, from: outputImage.extent) {
-//                let newImage = UIImage(cgImage: cgimg)
-//                frontSideMaterial.diffuse.contents = newImage
-//            } else {
-//                frontSideMaterial.diffuse.contents = pickedImage
-//            }
-//        } else {
-//            frontSideMaterial.diffuse.contents = pickedImage
-//        }
         
         if let processedImage = applyFilter(filterIndex: index) {
             frontSideMaterial.diffuse.contents = processedImage
@@ -208,8 +194,6 @@ class ARSceneViewController: UIViewController, ARSCNViewDelegate {
         resultNode.addChildNode(borderNode)
         resultNode.addChildNode(imageNode)
         
-        //let moveDown = SCNAction.move(by: SCNVector3(0, -0.025, 0), duration: 1)
-        //let moveUp = SCNAction.move(by: SCNVector3(0,0.025,0), duration: 1)
         let moveDown = SCNAction.move(by: SCNVector3(0, -0.025 * Double(nodesCount), 0), duration: 1)
         let moveUp = SCNAction.move(by: SCNVector3(0,0.025 * Double(nodesCount),0), duration: 1)
         let waitAction = SCNAction.wait(duration: 0.1)

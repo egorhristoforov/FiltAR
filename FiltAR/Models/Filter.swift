@@ -143,10 +143,6 @@ class Filter {
         }
     }
     
-    func updateKey(newKey: String) {
-        self.inputKey = newKey
-    }
-    
     func updateKeyValue(newValue: Float) {
         filter.setValue(newValue, forKey: inputKey)
     }

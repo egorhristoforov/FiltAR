@@ -90,7 +90,6 @@ class FilterModalViewController: UIViewController {
         
         let sliderValue = sender.value
         
-        //filter.filter.setValue(sliderValue, forKey: filter.inputKey)
         filter.updateKeyValue(newValue: sliderValue)
         guard let outputImage = filter.filter.outputImage else { return }
         
